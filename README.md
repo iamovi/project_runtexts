@@ -17,7 +17,7 @@ You can install `runtexts` using pip:
 pip install runtexts
 ```
 
-### Or manually,
+### Or manually, ( not recommend )
 
 1. Clone this repo:
 
