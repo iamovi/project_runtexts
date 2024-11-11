@@ -10,7 +10,7 @@ import requests
 init()
 
 # Define the current version of the package
-CURRENT_VERSION = "1.2" 
+CURRENT_VERSION = "1.3" 
 
 def check_for_updates():
     try:
@@ -27,6 +27,7 @@ def check_for_updates():
             print(Fore.CYAN + "pip install --upgrade runtexts" + Style.RESET_ALL)
         else:
             print(Fore.GREEN + "\nYou are using the latest version of 'runtexts'." + Style.RESET_ALL)
+            print(Fore.GREEN + "made by Maruf Ovi." + Style.RESET_ALL)
     except requests.exceptions.RequestException as e:
         print(Fore.RED + f"\nError checking for updates: {e}" + Style.RESET_ALL)
 
