@@ -16,7 +16,7 @@ import argparse
 init()
 
 # Define the current version of the package
-CURRENT_VERSION = "1.4" 
+CURRENT_VERSION = "1.5" 
 
 def check_for_updates():
     try:

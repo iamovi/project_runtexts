@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: runtexts
-Version: 1.4
+Version: 1.5
 Summary: A CLI and GUI tool to send automated messages.
 Home-page: https://github.com/iamovi/project_runtexts
 Author: Maruf Ovi
@@ -37,7 +37,9 @@ You can install `runtexts` using pip:
 pip install runtexts
 ```
 
-### Or manually, ( not recommended )
+### Or manually,
+
+**âœ” Use this method if having problem of installing latest version from PyPi !!!**
 
 1. Clone this repo:
 

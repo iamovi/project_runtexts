@@ -19,7 +19,9 @@ You can install `runtexts` using pip:
 pip install runtexts
 ```
 
-### Or manually, ( not recommended )
+### Or manually,
+
+**✔ Use this method if having problem of installing latest version from PyPi !!!**
 
 1. Clone this repo:
 
