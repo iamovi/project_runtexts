@@ -2,14 +2,13 @@ from setuptools import setup, find_packages
 
 setup(
     name="runtexts",
-    version="1.5",
+    version="1.6",
     packages=find_packages(),
     install_requires=[
         "pyautogui",
         "colorama",
         "requests",
-        "keyboard",
-        "tkinter",  
+        "keyboard",  
     ],
     entry_points={
         "console_scripts": [

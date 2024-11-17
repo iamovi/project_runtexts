@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: runtexts
-Version: 1.5
+Version: 1.6
 Summary: A CLI and GUI tool to send automated messages.
 Home-page: https://github.com/iamovi/project_runtexts
 Author: Maruf Ovi
@@ -14,7 +14,6 @@ Requires-Dist: pyautogui
 Requires-Dist: colorama
 Requires-Dist: requests
 Requires-Dist: keyboard
-Requires-Dist: tkinter
 
 # runtexts
 
