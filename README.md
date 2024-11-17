@@ -1,13 +1,15 @@
 # runtexts
 
-`runtexts` is a command-line tool designed to automate the sending of messages. This tool allows you to configure a message, set the number of times it should be sent, and control the delay between each message. You can also choose between "bot-like" fast typing or "human-like" slower typing speeds.
+`runtexts` is a command-line and graphical user interface (GUI) tool designed to automate the sending of messages.
 
 ## Features
 
-- Automate the sending of messages
-- Set a custom delay between messages
-- Simulate fast "bot-like" typing or slower "human-like" typing
-- Simple CLI interface for easy use
+- Automate the sending of messages.
+- Set a custom delay between messages.
+- Simulate fast "bot-like" typing or slower "human-like" typing.
+- Simple CLI interface for easy use.
+- Option to use a GUI for a more visual experience.
+- "Infinity" mode for endless message sending.
 
 ## Installation
 
@@ -45,7 +47,23 @@ Once installed, you can run the tool directly from the command line:
 runtexts
 ```
 
-Follow the on-screen prompts to configure your message, number of repetitions, typing speed, and delay.
+- Simply run `runtexts` to use the program.
+
+**Or Single use:**
+
+```bash
+runtexts cli
+```
+
+- this will show runtexts cli prompts.
+
+- Follow the on-screen prompts to configure your message, number of repetitions, typing speed, and delay.
+
+```bash
+runtexts gui
+```
+
+- this will open a graphical user-interface.
 
 ### Upgrade CLI if available:
 
@@ -62,6 +80,10 @@ Here is a typical usage scenario:
 3. Set the delay between each message (in seconds).
 4. Choose between fast (bot) or slow (human) typing modes.
 5. The tool will automatically type and send the messages.
+
+***And use runtexts GUI for easy process.***
+
+**Type runtexts --help for details.**
 
 ## License
 

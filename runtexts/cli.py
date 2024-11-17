@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
 
+import tkinter as tk
+from tkinter import messagebox
 import pyautogui
 import time
 import sys
 from colorama import Fore, Style, init
 import requests
+import threading
+import keyboard
+import os
+import argparse
 
 # Initialize colorama for cross-platform color support
 init()
 
 # Define the current version of the package
-CURRENT_VERSION = "1.3" 
+CURRENT_VERSION = "2.0" 
 
 def check_for_updates():
     try:
@@ -22,7 +28,6 @@ def check_for_updates():
         latest_version = data["info"]["version"]
         
         if latest_version != CURRENT_VERSION:
-            print(Fore.YELLOW + f"\nfrom Maruf Ovi." + Style.RESET_ALL)
             print(Fore.YELLOW + f"\nA new version ({latest_version}) of 'runtexts' is available! Please update using:" + Style.RESET_ALL)
             print(Fore.CYAN + "pip install --upgrade runtexts" + Style.RESET_ALL)
         else:
@@ -75,18 +80,105 @@ def send_texts(message, times, delay, mode):
 
     print(Fore.YELLOW + "\nCompleted sending messages." + Style.RESET_ALL)
 
-def main():
-    check_for_updates()  # Check for updates when the program starts
-    
-    message, times, delay = get_user_inputs()
+def create_gui():
+    global window, message_entry, times_entry, delay_entry, typing_mode_var
 
-    # Typing Mode Selection
+    # Create the main window
+    window = tk.Tk()
+    window.title("RunTexts GUI")
+    window.geometry("600x500")  # Larger window size for better layout
+    window.configure(bg="#f0f0f0")  # Set background color
+
+    # Header Label
+    header_label = tk.Label(window, text="RunTexts Message Sender", font=("Arial", 18, "bold"), bg="#f0f0f0")
+    header_label.pack(pady=20)
+
+    # Message input
+    message_label = tk.Label(window, text="Enter the message to send:", font=("Arial", 12), bg="#f0f0f0")
+    message_label.pack(pady=5)
+    message_entry = tk.Entry(window, width=50, font=("Arial", 14))
+    message_entry.pack(pady=10)
+
+    # Times input
+    times_label = tk.Label(window, text="How many times to send the message (or 'infinity'):", font=("Arial", 12), bg="#f0f0f0")
+    times_label.pack(pady=5)
+    times_entry = tk.Entry(window, width=50, font=("Arial", 14))
+    times_entry.pack(pady=10)
+
+    # Delay input
+    delay_label = tk.Label(window, text="Delay between each message (in seconds):", font=("Arial", 12), bg="#f0f0f0")
+    delay_label.pack(pady=5)
+    delay_entry = tk.Entry(window, width=50, font=("Arial", 14))
+    delay_entry.pack(pady=10)
+
+    # Typing mode selection
+    typing_mode_label = tk.Label(window, text="Select Typing Mode:", font=("Arial", 12), bg="#f0f0f0")
+    typing_mode_label.pack(pady=5)
+
+    typing_mode_var = tk.StringVar(value="1")  # Default to "bot"
+
+    bot_radio = tk.Radiobutton(window, text="Bot (Fast Typing)", variable=typing_mode_var, value="1", font=("Arial", 12), bg="#f0f0f0")
+    bot_radio.pack(pady=5)
+
+    human_radio = tk.Radiobutton(window, text="Human (Slow Typing)", variable=typing_mode_var, value="2", font=("Arial", 12), bg="#f0f0f0")
+    human_radio.pack(pady=5)
+
+    # Frame for buttons to manage layout better
+    button_frame = tk.Frame(window, bg="#f0f0f0")
+    button_frame.pack(pady=20)
+
+    run_button = tk.Button(button_frame, text="Run", command=on_run_button_click, font=("Arial", 12, "bold"), bg="#4CAF50", fg="white", relief="raised", width=15)
+    run_button.grid(row=0, column=0, padx=10)
+
+    edit_button = tk.Button(button_frame, text="Edit Configuration", command=on_edit_button_click, font=("Arial", 12, "bold"), bg="#FF9800", fg="white", relief="raised", width=15)
+    edit_button.grid(row=0, column=1, padx=10)
+
+    # Start listening for the "Esc" key to exit the program
+    window.after(100, listen_for_esc_key)
+
+    # Run the GUI event loop
+    window.mainloop()
+
+def listen_for_esc_key():
+    if keyboard.is_pressed('esc'):
+        print("Exiting program...")
+        window.quit()
+
+    # Check again after 100ms
+    window.after(100, listen_for_esc_key)
+
+def on_run_button_click():
+    message = message_entry.get()
+    try:
+        times_input = times_entry.get().strip()
+        if times_input.lower() == "infinity":
+            times = float("inf")  # Use infinity as the signal for an endless loop
+        else:
+            times = int(times_input)
+    except ValueError:
+        messagebox.showerror("Invalid Input", "Please enter a valid number for times.")
+        return
+
+    try:
+        delay = float(delay_entry.get())
+    except ValueError:
+        messagebox.showerror("Invalid Input", "Please enter a valid number for delay.")
+        return
+
+    mode = "bot" if typing_mode_var.get() == "1" else "human"
+
+    # Start sending messages in a new thread
+    threading.Thread(target=send_texts, args=(message, times, delay, mode), daemon=True).start()
+
+def on_edit_button_click():
+    message, times, delay = get_user_inputs()
+    # Repeat the typing mode selection and update accordingly
     while True:
         print(Fore.CYAN + "\n--- Typing Mode Selection ---" + Style.RESET_ALL)
         print(Fore.BLUE + "Press '1' for bot (fast typing)")
         print("Press '2' for human (slow typing)" + Style.RESET_ALL)
         typing_choice = input(Fore.GREEN + "Choose typing mode: " + Style.RESET_ALL).strip()
-        
+
         if typing_choice == "1":
             typing_mode = "bot"
             break
@@ -96,39 +188,64 @@ def main():
         else:
             print(Fore.RED + "Invalid choice. Please select '1' or '2'." + Style.RESET_ALL)
 
-    # Main Options Loop
-    while True:
-        print(Fore.CYAN + "\n--- Main Options ---" + Style.RESET_ALL)
-        print(Fore.BLUE + "Press '1' to run the message sender")
-        print("Press '2' to edit the message configuration")
-        print("Press '3' to exit the program" + Style.RESET_ALL)
-        command = input(Fore.GREEN + "Choose an option: " + Style.RESET_ALL).strip()
+    send_texts(message, times, delay, typing_mode)
 
-        if command == "1":  # Run
-            send_texts(message, times, delay, typing_mode)
-            print(Fore.YELLOW + "\nMessages sent. Exiting." + Style.RESET_ALL)
+def run_cli():
+    message, times, delay = get_user_inputs()
+
+    while True:
+        print(Fore.CYAN + "\n--- Typing Mode Selection ---" + Style.RESET_ALL)
+        print(Fore.BLUE + "Press '1' for bot (fast typing)")
+        print("Press '2' for human (slow typing)" + Style.RESET_ALL)
+        typing_choice = input(Fore.GREEN + "Choose typing mode: " + Style.RESET_ALL).strip()
+
+        if typing_choice == "1":
+            typing_mode = "bot"
             break
-        elif command == "2":  # Edit
-            message, times, delay = get_user_inputs()
-            while True:
-                print(Fore.CYAN + "\n--- Typing Mode Selection ---" + Style.RESET_ALL)
-                print(Fore.BLUE + "Press '1' for bot (fast typing)")
-                print("Press '2' for human (slow typing)" + Style.RESET_ALL)
-                typing_choice = input(Fore.GREEN + "Choose typing mode: " + Style.RESET_ALL).strip()
-                
-                if typing_choice == "1":
-                    typing_mode = "bot"
-                    break
-                elif typing_choice == "2":
-                    typing_mode = "human"
-                    break
-                else:
-                    print(Fore.RED + "Invalid choice. Please select '1' or '2'." + Style.RESET_ALL)
-        elif command == "3":  # Exit
-            print(Fore.YELLOW + "\nExiting the program." + Style.RESET_ALL)
+        elif typing_choice == "2":
+            typing_mode = "human"
             break
         else:
-            print(Fore.RED + "Unknown command. Please press '1', '2', or '3'." + Style.RESET_ALL)
+            print(Fore.RED + "Invalid choice. Please select '1' or '2'." + Style.RESET_ALL)
+
+    send_texts(message, times, delay, typing_mode)
+
+def main():
+    try:
+        parser = argparse.ArgumentParser(description="RunTexts - A Text Messaging Automation Tool")
+        parser.add_argument('mode', nargs='?', default=None, choices=['cli', 'gui', 'version'], help="Choose 'cli' for command-line or 'gui' for graphical user interface")
+        args = parser.parse_args()
+
+        if args.mode == 'cli':
+            run_cli()
+
+        elif args.mode == 'gui':
+            create_gui()
+
+        elif args.mode == 'version':
+            check_for_updates()
+
+        else:
+            # If no argument is provided, ask the user to choose between CLI and GUI
+            print("Welcome to RunTexts!")
+            print("1 - Use CLI")
+            print("2 - Use GUI")
+            print("3 - Check for updates")
+            choice = input("Choose an option: ").strip()
+
+            if choice == '1':
+                run_cli()
+            elif choice == '2':
+                create_gui()
+            elif choice == '3':
+                check_for_updates()
+            else:
+                print("Invalid option. Exiting...")
+
+    except KeyboardInterrupt:
+        # Graceful exit on Ctrl+C
+        print(Fore.YELLOW + "\nProgram terminated by user (Ctrl+C)." + Style.RESET_ALL)
+        sys.exit(0)  # Exit the program gracefully
 
 if __name__ == "__main__":
     main()
