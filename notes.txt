@@ -1,7 +1,15 @@
+##### publishing to pypi #####
+
 pip install setuptools wheel twine
 
 python setup.py sdist bdist_wheel
 
 twine upload dist/*
 
-_ publishing to pypi.
+##### python venv #####
+
+python -m venv myenv
+
+myenv\Scripts\activate
+
+deactivate
