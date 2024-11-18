@@ -1,3 +1,0 @@
-[console_scripts]
-runtexts = runtexts.cli:main
-runtexts-gui = runtexts.gui:main

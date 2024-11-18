@@ -11,12 +11,13 @@ import threading
 import keyboard
 import os
 import argparse
+import pyfiglet
 
 # Initialize colorama for cross-platform color support
 init()
 
 # Define the current version of the package
-CURRENT_VERSION = "1.6" 
+CURRENT_VERSION = "1.7"
 
 def check_for_updates():
     try:
@@ -24,9 +25,9 @@ def check_for_updates():
         response = requests.get(f"https://pypi.org/pypi/runtexts/json")
         response.raise_for_status()  # Raise an exception for a bad response
         data = response.json()
-        
+
         latest_version = data["info"]["version"]
-        
+
         if latest_version != CURRENT_VERSION:
             print(Fore.YELLOW + f"\nA new version ({latest_version}) of 'runtexts' is available! Please update using:" + Style.RESET_ALL)
             print(Fore.CYAN + "pip install --upgrade runtexts" + Style.RESET_ALL)
@@ -191,9 +192,11 @@ def on_edit_button_click():
     send_texts(message, times, delay, typing_mode)
 
 def run_cli():
+    # Get user inputs: message, times, and delay
     message, times, delay = get_user_inputs()
 
     while True:
+        # Ask for typing mode selection after basic configurations
         print(Fore.CYAN + "\n--- Typing Mode Selection ---" + Style.RESET_ALL)
         print(Fore.BLUE + "Press '1' for bot (fast typing)")
         print("Press '2' for human (slow typing)" + Style.RESET_ALL)
@@ -208,39 +211,55 @@ def run_cli():
         else:
             print(Fore.RED + "Invalid choice. Please select '1' or '2'." + Style.RESET_ALL)
 
-    send_texts(message, times, delay, typing_mode)
+    # Now provide the confirmation options before running
+    while True:
+        print(Fore.CYAN + "\n--- Confirmation ---" + Style.RESET_ALL)
+        print(Fore.BLUE + "1 - Run the script with the selected configuration" + Style.RESET_ALL)
+        print(Fore.YELLOW + "2 - Edit the configuration" + Style.RESET_ALL)
+        print(Fore.RED + "3 - Exit" + Style.RESET_ALL)
+
+        confirmation_choice = input(Fore.GREEN + "Choose an option: " + Style.RESET_ALL).strip()
+
+        if confirmation_choice == "1":
+            # Run the script with the selected settings
+            send_texts(message, times, delay, typing_mode)
+            break  # Exit the loop after running the script
+        
+        elif confirmation_choice == "2":
+            # Allow the user to edit the configuration (input settings again)
+            on_edit_button_click()
+            break  # Exit the loop to return to the editing options
+
+        elif confirmation_choice == "3":
+            # Exit the program
+            print(Fore.YELLOW + "\nExiting CLI mode..." + Style.RESET_ALL)
+            break  # Exit the loop and end the program
+        
+        else:
+            print(Fore.RED + "Invalid choice. Please choose 1, 2, or 3." + Style.RESET_ALL)
+
+
 
 def main():
     try:
-        parser = argparse.ArgumentParser(description="RunTexts - A Text Messaging Automation Tool")
-        parser.add_argument('mode', nargs='?', default=None, choices=['cli', 'gui', 'version'], help="Choose 'cli' for command-line or 'gui' for graphical user interface")
-        args = parser.parse_args()
+        # Create ASCII art for the welcome message
+        ascii_art = pyfiglet.figlet_format("RunTexts!")
+        print(Fore.CYAN + ascii_art + Style.RESET_ALL)
 
-        if args.mode == 'cli':
+        # Ask the user to choose the mode
+        print(Fore.CYAN + "1 - Use CLI")
+        print("2 - Use GUI")
+        print("3 - Check for updates")
+        choice = input("Choose an option: ").strip()
+
+        if choice == '1':
             run_cli()
-
-        elif args.mode == 'gui':
+        elif choice == '2':
             create_gui()
-
-        elif args.mode == 'version':
+        elif choice == '3':
             check_for_updates()
-
         else:
-            # If no argument is provided, ask the user to choose between CLI and GUI
-            print("Welcome to RunTexts!")
-            print("1 - Use CLI")
-            print("2 - Use GUI")
-            print("3 - Check for updates")
-            choice = input("Choose an option: ").strip()
-
-            if choice == '1':
-                run_cli()
-            elif choice == '2':
-                create_gui()
-            elif choice == '3':
-                check_for_updates()
-            else:
-                print("Invalid option. Exiting...")
+            print("Invalid option. Exiting...")
 
     except KeyboardInterrupt:
         # Graceful exit on Ctrl+C

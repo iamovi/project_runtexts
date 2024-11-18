@@ -2,3 +2,4 @@ pyautogui
 colorama
 requests
 keyboard
+pyfiglet
