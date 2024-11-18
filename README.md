@@ -1,6 +1,6 @@
-# runtexts
+### `runtexts` is a command-line and graphical user interface (GUI) tool designed to automate the sending of messages.
 
-`runtexts` is a command-line and graphical user interface (GUI) tool designed to automate the sending of messages.
+![runtexts_preview](./runtexts_preview.png)
 
 ## Features
 
